@@ -26,7 +26,7 @@ export default function Earnings() {
         <div className={ui.card}><p className="text-muted-foreground">This Year (money received)</p><p className="text-3xl font-bold">{money(total.received)}</p></div>
       </div>
       <div className={cn(ui.card, 'mb-4 h-64')}>
-        <ResponsiveContainer width="100%" height="100%"><BarChart data={chart}><XAxis dataKey="name" /><YAxis width={70} tickFormatter={(v: number) => money(v)} /><Tooltip formatter={(v: number) => money(v)} /><Bar dataKey="Received" fill="hsl(224 76% 48%)" radius={[4, 4, 0, 0]} /></BarChart></ResponsiveContainer>
+        <ResponsiveContainer width="100%" height="100%"><BarChart data={chart}><XAxis dataKey="name" /><YAxis width={70} tickFormatter={(v: number) => money(v)} /><Tooltip formatter={(v) => money(Number(v))} /><Bar dataKey="Received" fill="hsl(224 76% 48%)" radius={[4, 4, 0, 0]} /></BarChart></ResponsiveContainer>
       </div>
       <div className={cn(ui.card, 'overflow-x-auto p-0')}>
         <table className="w-full"><thead><tr>{['Month', 'Billed', 'Received', 'Still Pending', ''].map((h) => <th key={h} className={ui.th}>{h}</th>)}</tr></thead>

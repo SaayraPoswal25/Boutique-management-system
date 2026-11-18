@@ -11,7 +11,7 @@ export type Values = Record<string, string>
 export interface FieldDef { name: string; label: string; type?: 'text' | 'number' | 'date' | 'textarea' | 'select'; required?: boolean; options?: string[]; voice?: boolean }
 interface Props {
   title: string; saveLabel: string; savedMessage: string; fields: FieldDef[]; initial?: Values
-  validate?: (v: Values) => Values; checkWarning?: (v: Values) => Promise<string | null>
+  validate?: (v: Values) => Record<string, string>; checkWarning?: (v: Values) => Promise<string | null>
   extra?: ReactNode; onSave: (v: Values) => Promise<void>; onClose: () => void
 }
 

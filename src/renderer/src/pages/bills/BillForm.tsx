@@ -47,7 +47,12 @@ export function BillFormDialog({ clientId, bill, onClose, onSaved }: { clientId?
     <FormDialog title={bill ? 'Edit Bill' : 'Create New Bill'} saveLabel="Save Bill" savedMessage="Bill saved" onClose={onClose} extra={extra}
       fields={[{ name: 'date', label: 'Date', type: 'date', required: true }, { name: 'notes', label: 'Notes', type: 'textarea', voice: true }]}
       initial={{ date: bill?.date ?? todayISO(), notes: bill?.notes ?? '' }}
-      validate={() => (!cid ? { date: 'Please choose a client first' } : picked.length === 0 ? { date: 'Please tick at least one garment' } : total < 0 ? { date: 'The discount is more than the total' } : {})}
+      validate={(): Record<string, string> => {
+        if (!cid) return { date: 'Please choose a client first' }
+        if (picked.length === 0) return { date: 'Please tick at least one garment' }
+        if (total < 0) return { date: 'The discount is more than the total' }
+        return {}
+      }}
       onSave={async (v) => {
         const i = { clientId: cid as ID, date: v.date, discount: Number(discount) || 0, notes: v.notes, garmentIds: picked }
         const saved = await mutate(bill ? api.bills.update(bill.id, i) : api.bills.create(i))
