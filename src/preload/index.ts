@@ -1,22 +1,13 @@
-import { contextBridge } from 'electron'
-import { electronAPI } from '@electron-toolkit/preload'
+import { contextBridge, ipcRenderer } from 'electron'
+import { API_METHODS } from '../shared/ipc-channels'
+import type { Api } from './index.d' // the contract
 
-// Custom APIs for renderer
-const api = {}
-
-// Use `contextBridge` APIs to expose Electron APIs to
-// renderer only if context isolation is enabled, otherwise
-// just add to the DOM global.
-if (process.contextIsolated) {
-  try {
-    contextBridge.exposeInMainWorld('electron', electronAPI)
-    contextBridge.exposeInMainWorld('api', api)
-  } catch (error) {
-    console.error(error)
-  }
-} else {
-  // @ts-ignore (define in dts)
-  window.electron = electronAPI
-  // @ts-ignore (define in dts)
-  window.api = api
+const api: Record<string, Record<string, (...args: unknown[]) => unknown>> = {}
+for (const [ns, methods] of Object.entries(API_METHODS)) {
+  api[ns] = {}
+  for (const m of methods) api[ns][m] = (...args) => ipcRenderer.invoke(`${ns}:${m}`, ...args)
 }
+// Synchronous on purpose (it is used directly in <img src>). Served by the photo:// protocol in main.
+api.photos.url = (file) => `photo://local/${encodeURIComponent(String(file))}`
+
+contextBridge.exposeInMainWorld('api', api as unknown as Api)
